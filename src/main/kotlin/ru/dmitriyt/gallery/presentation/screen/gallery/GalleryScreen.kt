@@ -180,12 +180,12 @@ data class GalleryScreen(
                         ) {
                             Column {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    val endPadding = if (screenState.isNestedDirectory) 8.dp else 24.dp
+                                    val endPadding = if (screenState.showTitleExpandLogic) 8.dp else 24.dp
                                     Text(
                                         text = directoryName,
                                         modifier = Modifier.padding(top = 16.dp, bottom = 16.dp, start = 24.dp, end = endPadding),
                                     )
-                                    if (screenState.isNestedDirectory) {
+                                    if (screenState.showTitleExpandLogic) {
                                         IconButton(
                                             onClick = {
                                                 titleExpanded = !titleExpanded
@@ -203,7 +203,7 @@ data class GalleryScreen(
                             }
                         }
                     }
-                    if (titleExpanded && screenState.isNestedDirectory) {
+                    if (titleExpanded && screenState.showTitleExpandLogic) {
                         Column {
                             Spacer(modifier = Modifier.height(84.dp))
                             Card(

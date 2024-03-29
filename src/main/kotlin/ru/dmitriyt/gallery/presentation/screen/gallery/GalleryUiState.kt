@@ -13,6 +13,9 @@ data class GalleryUiState(
     val showBackIcon: Boolean
         get() = viewType == UiGalleryViewType.Tree && isNestedDirectory
 
+    val showTitleExpandLogic: Boolean
+        get() = viewType == UiGalleryViewType.Tree && isNestedDirectory
+
     sealed class Content {
         data object Loading : Content()
         data class Error(val error: String) : Content()

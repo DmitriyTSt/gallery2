@@ -46,15 +46,17 @@ class GalleryScreenModel(
     }
 
     fun changeViewType() {
-        mutableState.update { state ->
-            state.copy(
-                viewType = when (state.viewType) {
-                    UiGalleryViewType.Chronology -> UiGalleryViewType.Tree
-                    UiGalleryViewType.Tree -> UiGalleryViewType.Chronology
-                }
-            )
+        val newViewType = when (mutableState.value.viewType) {
+            UiGalleryViewType.Chronology -> UiGalleryViewType.Tree
+            UiGalleryViewType.Tree -> UiGalleryViewType.Chronology
         }
-        loadPhotos(directoryStack.first())
+        mutableState.update { state ->
+            state.copy(viewType = newViewType)
+        }
+        when (newViewType) {
+            UiGalleryViewType.Chronology -> loadPhotos(directoryStack.first())
+            UiGalleryViewType.Tree -> loadPhotos(directoryStack.last())
+        }
     }
 
     fun closeRootDirectory() {

@@ -8,7 +8,6 @@ import androidx.compose.ui.window.application
 import cafe.adriel.voyager.navigator.Navigator
 import org.koin.compose.KoinApplication
 import org.koin.core.context.loadKoinModules
-import ru.dmitriyt.gallery.di.loggerModule
 import ru.dmitriyt.gallery.di.repositoryModule
 import ru.dmitriyt.gallery.di.screenModelModule
 import ru.dmitriyt.gallery.di.storageModule
@@ -24,7 +23,7 @@ fun App() {
 
 fun main() = application {
     KoinApplication(application = {
-        loadKoinModules(listOf(loggerModule, screenModelModule, storageModule, repositoryModule))
+        loadKoinModules(listOf(screenModelModule, storageModule, repositoryModule))
     }) {
         Window(title = "Gallery", onCloseRequest = ::exitApplication) {
             App()
