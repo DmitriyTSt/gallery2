@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -35,6 +36,9 @@ import coil3.compose.AsyncImage
 import kotlinx.coroutines.flow.collectLatest
 import ru.dmitriyt.gallery.domain.model.FileModel
 import ru.dmitriyt.gallery.presentation.screen.gallery.model.UiGalleryItem
+import ru.dmitriyt.gallery.presentation.screen.gallery.views.DirectoryItem
+import ru.dmitriyt.gallery.presentation.screen.gallery.views.ImageItem
+import ru.dmitriyt.gallery.presentation.screen.gallery.views.MonthDividerItem
 import ru.dmitriyt.gallery.presentation.screen.splash.SplashScreen
 
 data class GalleryScreen(
@@ -73,7 +77,7 @@ data class GalleryScreen(
                 modifier = Modifier.fillMaxSize(),
             ) {
                 Column(modifier = Modifier.padding(8.dp)) {
-                    if (screenState.canGoBack) {
+                    if (screenState.showBackIcon) {
                         FloatingActionButton(
                             onClick = {
                                 screenModel.onBackClick()
@@ -101,6 +105,19 @@ data class GalleryScreen(
                             tint = Color.White,
                         )
                     }
+                    FloatingActionButton(
+                        onClick = {
+                            screenModel.changeViewType()
+                        },
+                        modifier = Modifier.padding(8.dp),
+                        backgroundColor = Color.DarkGray,
+                    ) {
+                        Icon(
+                            imageVector = screenState.viewType.inverseIcon,
+                            contentDescription = null,
+                            tint = Color.White,
+                        )
+                    }
                 }
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -118,12 +135,25 @@ data class GalleryScreen(
                                 modifier = Modifier.fillMaxSize(),
                                 contentPadding = PaddingValues(top = 68.dp)
                             ) {
-                                items(contentState.items.size) {
-                                    when (val item = contentState.items[it]) {
-                                        is UiGalleryItem.Directory -> DirectoryItem(item = item, onClick = { directory ->
-                                            screenModel.changeDirectory(directory.directory)
-                                        })
-                                        is UiGalleryItem.Image -> ImageItem(item = item)
+                                contentState.items.forEach { item ->
+                                    item(
+                                        span = {
+                                            GridItemSpan(
+                                                if (item is UiGalleryItem.MonthDivider) {
+                                                    maxLineSpan
+                                                } else {
+                                                    1
+                                                }
+                                            )
+                                        }
+                                    ) {
+                                        when (item) {
+                                            is UiGalleryItem.Directory -> DirectoryItem(item = item, onClick = { directory ->
+                                                screenModel.changeDirectory(directory.directory)
+                                            })
+                                            is UiGalleryItem.Image -> ImageItem(item = item)
+                                            is UiGalleryItem.MonthDivider -> MonthDividerItem(item = item)
+                                        }
                                     }
                                 }
                             }

@@ -1,5 +1,6 @@
 package ru.dmitriyt.gallery.domain.repository
 
+import ru.dmitriyt.gallery.domain.model.ChronologicalItem
 import ru.dmitriyt.gallery.domain.model.FileModel
 
 /**
@@ -17,5 +18,5 @@ interface PhotoRepository {
      * Получить все изображения рекурсивно по всем папкам по пути [uri]
      * @param uri - путь корневой папки
      */
-    suspend fun getAllPhotos(uri: String): List<FileModel.Image>
+    suspend fun getAllPhotos(uri: String): List<ChronologicalItem>
 }

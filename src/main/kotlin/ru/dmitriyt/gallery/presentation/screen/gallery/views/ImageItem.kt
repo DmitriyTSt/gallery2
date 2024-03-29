@@ -1,4 +1,4 @@
-package ru.dmitriyt.gallery.presentation.screen.gallery
+package ru.dmitriyt.gallery.presentation.screen.gallery.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

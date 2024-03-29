@@ -20,4 +20,8 @@ sealed class UiGalleryItem {
         val directory: FileModel.Directory,
         val images: List<Image>,
     ) : UiGalleryItem()
+
+    data class MonthDivider(
+        val month: String,
+    ) : UiGalleryItem()
 }

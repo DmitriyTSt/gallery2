@@ -1,6 +1,13 @@
 package ru.dmitriyt.gallery.presentation.screen.gallery.model
 
-sealed class UiGalleryViewType {
-    data object Chronology : UiGalleryViewType()
-    data object Tree : UiGalleryViewType()
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Folder
+import androidx.compose.ui.graphics.vector.ImageVector
+
+sealed class UiGalleryViewType(
+    val inverseIcon: ImageVector,
+) {
+    data object Chronology : UiGalleryViewType(Icons.Default.Folder)
+    data object Tree : UiGalleryViewType(Icons.Default.CalendarMonth)
 }

@@ -5,10 +5,12 @@ import ru.dmitriyt.gallery.presentation.screen.gallery.model.UiGalleryViewType
 
 data class GalleryUiState(
     val currentDirectory: UiGalleryItem.Directory? = null,
-    val canGoBack: Boolean = false,
+    val isNestedDirectory: Boolean = false,
     val viewType: UiGalleryViewType = UiGalleryViewType.Tree,
     val contentState: Content = Content.Loading,
 ) {
+    val showBackIcon: Boolean
+        get() = viewType == UiGalleryViewType.Tree && isNestedDirectory
 
     sealed class Content {
         data object Loading : Content()

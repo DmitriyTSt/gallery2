@@ -1,6 +1,10 @@
 package ru.dmitriyt.gallery.presentation.screen.gallery.model
 
+import ru.dmitriyt.gallery.domain.model.ChronologicalItem
 import ru.dmitriyt.gallery.domain.model.FileModel
+import java.text.SimpleDateFormat
+import java.time.ZoneId
+import java.util.Locale
 import kotlin.random.Random
 
 fun FileModel.toUi(): UiGalleryItem? {
@@ -23,4 +27,17 @@ fun FileModel.Directory.toUi(): UiGalleryItem.Directory {
         directory = this,
         images = this.files.filterIsInstance<FileModel.Image>().map { it.toUi() },
     )
+}
+
+private val monthFormat = SimpleDateFormat("LLLL yyyy", Locale("ru", "RU"))
+
+fun ChronologicalItem.toUi(): UiGalleryItem {
+    return when (this) {
+        is ChronologicalItem.Image -> this.image.toUi()
+        is ChronologicalItem.Month -> UiGalleryItem.MonthDivider(
+            month = monthFormat
+                .format(this.monthDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli())
+                .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+        )
+    }
 }

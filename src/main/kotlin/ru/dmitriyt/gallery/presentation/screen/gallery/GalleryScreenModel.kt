@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import ru.dmitriyt.gallery.domain.model.FileModel
 import ru.dmitriyt.gallery.domain.repository.PhotoRepository
 import ru.dmitriyt.gallery.domain.repository.SettingsRepository
+import ru.dmitriyt.gallery.presentation.screen.gallery.model.UiGalleryItem
 import ru.dmitriyt.gallery.presentation.screen.gallery.model.UiGalleryViewType
 import ru.dmitriyt.gallery.presentation.screen.gallery.model.toUi
 
@@ -35,13 +36,25 @@ class GalleryScreenModel(
     }
 
     fun onBackClick() {
-        val directory = if (mutableState.value.canGoBack) {
+        val directory = if (mutableState.value.isNestedDirectory) {
             directoryStack.removeLast()
             directoryStack.last()
         } else {
             null
         }
         directory?.let { loadPhotos(it) }
+    }
+
+    fun changeViewType() {
+        mutableState.update { state ->
+            state.copy(
+                viewType = when (state.viewType) {
+                    UiGalleryViewType.Chronology -> UiGalleryViewType.Tree
+                    UiGalleryViewType.Tree -> UiGalleryViewType.Chronology
+                }
+            )
+        }
+        loadPhotos(directoryStack.first())
     }
 
     fun closeRootDirectory() {
@@ -64,7 +77,7 @@ class GalleryScreenModel(
         mutableState.update { state ->
             state.copy(
                 currentDirectory = directory.toUi(),
-                canGoBack = directoryStack.size > 1,
+                isNestedDirectory = directoryStack.size > 1,
             )
         }
         if (mutableState.value.contentState is GalleryUiState.Content.Error) {
@@ -73,8 +86,8 @@ class GalleryScreenModel(
         screenModelScope.launch {
             val itemsResult = runCatching {
                 when (mutableState.value.viewType) {
-                    UiGalleryViewType.Chronology -> photoRepository.getAllPhotos(directory.uri)
-                    UiGalleryViewType.Tree -> photoRepository.getImagesTree(directory.uri)
+                    UiGalleryViewType.Chronology -> photoRepository.getAllPhotos(directory.uri).map { it.toUi() }
+                    UiGalleryViewType.Tree -> photoRepository.getImagesTree(directory.uri).mapNotNull { it.toUi() }
                 }
             }
             itemsResult.fold(
@@ -82,8 +95,8 @@ class GalleryScreenModel(
                     mutableState.update { state ->
                         state.copy(
                             contentState = GalleryUiState.Content.Success(
-                                backgroundImageUri = items.filterIsInstance<FileModel.Image>().randomOrNull()?.uri,
-                                items = items.mapNotNull { it.toUi() },
+                                backgroundImageUri = items.filterIsInstance<UiGalleryItem.Image>().randomOrNull()?.image?.uri,
+                                items = items,
                             )
                         )
                     }

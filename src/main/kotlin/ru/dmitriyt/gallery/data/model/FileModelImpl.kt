@@ -5,17 +5,13 @@ import java.io.File
 
 private val imageExtensions = setOf("jpg", "png", "bmp", "webp", "ico", "gif", "jpeg")
 
-fun File.toDomain(): FileModel {
+fun File.toDomain(files: List<FileModel> = emptyList()): FileModel {
     return if (isDirectory) {
         FileModel.Directory(
             uri = absolutePath,
             name = name,
-            files = emptyList(),
-        ).let { directory ->
-            directory.copy(
-                files = listFiles().orEmpty().map { it.toDomain() }
-            )
-        }
+            files = files,
+        )
     } else {
         if (isImage()) {
             FileModel.Image(
@@ -31,6 +27,6 @@ fun File.toDomain(): FileModel {
     }
 }
 
-private fun File.isImage(): Boolean {
+fun File.isImage(): Boolean {
     return imageExtensions.contains(this.extension.lowercase())
 }

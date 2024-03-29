@@ -21,6 +21,7 @@ dependencies {
     // (in a separate module for demo project and in testMain).
     // With compose.desktop.common you will also lose @Preview functionality
     implementation(compose.desktop.currentOs)
+    implementation("androidx.compose.material:material-icons-extended:1.6.4")
 
     implementation(project(":logger"))
 
@@ -41,6 +42,7 @@ dependencies {
 
     implementation("androidx.datastore:datastore-preferences-core:1.0.0")
     implementation("com.darkrockstudios:mpfilepicker:3.1.0")
+    implementation("com.drewnoakes:metadata-extractor:2.18.0")
 }
 
 compose.desktop {
