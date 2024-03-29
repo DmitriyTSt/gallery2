@@ -105,19 +105,6 @@ data class GalleryScreen(
                     }
                     FloatingActionButton(
                         onClick = {
-                            screenModel.closeRootDirectory()
-                        },
-                        modifier = Modifier.padding(8.dp),
-                        backgroundColor = Color.DarkGray,
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = null,
-                            tint = Color.White,
-                        )
-                    }
-                    FloatingActionButton(
-                        onClick = {
                             screenModel.changeViewType()
                         },
                         modifier = Modifier.padding(8.dp),
@@ -125,6 +112,19 @@ data class GalleryScreen(
                     ) {
                         Icon(
                             imageVector = screenState.viewType.inverseIcon,
+                            contentDescription = null,
+                            tint = Color.White,
+                        )
+                    }
+                    FloatingActionButton(
+                        onClick = {
+                            screenModel.closeRootDirectory()
+                        },
+                        modifier = Modifier.padding(8.dp),
+                        backgroundColor = Color.DarkGray,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
                             contentDescription = null,
                             tint = Color.White,
                         )
