@@ -102,6 +102,8 @@ data class GalleryScreen(
                                 tint = Color.White,
                             )
                         }
+                    } else {
+                        Spacer(Modifier.height(72.dp))
                     }
                     FloatingActionButton(
                         onClick = {
