@@ -78,6 +78,7 @@ class GalleryScreenModel(
             state.copy(
                 currentDirectory = directory.toUi(),
                 isNestedDirectory = directoryStack.size > 1,
+                directoryPath = directoryStack.joinToString(" / ") { it.name },
             )
         }
         if (mutableState.value.contentState is GalleryUiState.Content.Error) {

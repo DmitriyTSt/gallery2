@@ -4,7 +4,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -14,20 +16,27 @@ import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -50,6 +59,8 @@ data class GalleryScreen(
         val navigator = LocalNavigator.currentOrThrow
         val screenModel = getScreenModel<GalleryScreenModel>()
         val screenState by screenModel.state.collectAsState()
+
+        var titleExpanded by remember { mutableStateOf(false) }
 
         LaunchedEffect(Unit) {
             screenModel.init(rootDir)
@@ -167,10 +178,46 @@ data class GalleryScreen(
                             contentColor = Color.White,
                             elevation = 16.dp,
                         ) {
-                            Text(
-                                text = directoryName,
-                                modifier = Modifier.padding(vertical = 16.dp, horizontal = 24.dp),
-                            )
+                            Column {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    val endPadding = if (screenState.isNestedDirectory) 8.dp else 24.dp
+                                    Text(
+                                        text = directoryName,
+                                        modifier = Modifier.padding(top = 16.dp, bottom = 16.dp, start = 24.dp, end = endPadding),
+                                    )
+                                    if (screenState.isNestedDirectory) {
+                                        IconButton(
+                                            onClick = {
+                                                titleExpanded = !titleExpanded
+                                            },
+                                            modifier = Modifier.padding(end = 4.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = if (titleExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                                                contentDescription = null,
+                                            )
+                                        }
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+                    if (titleExpanded && screenState.isNestedDirectory) {
+                        Column {
+                            Spacer(modifier = Modifier.height(84.dp))
+                            Card(
+                                shape = RoundedCornerShape(50),
+                                backgroundColor = Color.DarkGray,
+                                contentColor = Color.White,
+                                elevation = 16.dp,
+                            ) {
+                                Text(
+                                    text = screenState.directoryPath,
+                                    modifier = Modifier.padding(start = 16.dp, top = 4.dp, bottom = 8.dp, end = 16.dp),
+                                    fontSize = 12.sp,
+                                )
+                            }
                         }
                     }
                 }

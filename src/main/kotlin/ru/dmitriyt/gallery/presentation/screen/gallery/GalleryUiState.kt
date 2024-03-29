@@ -5,6 +5,7 @@ import ru.dmitriyt.gallery.presentation.screen.gallery.model.UiGalleryViewType
 
 data class GalleryUiState(
     val currentDirectory: UiGalleryItem.Directory? = null,
+    val directoryPath: String = "",
     val isNestedDirectory: Boolean = false,
     val viewType: UiGalleryViewType = UiGalleryViewType.Tree,
     val contentState: Content = Content.Loading,
