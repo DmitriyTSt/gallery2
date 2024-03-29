@@ -1,5 +1,6 @@
 package ru.dmitriyt.gallery.presentation.screen.gallery
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -33,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
@@ -43,12 +45,14 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.flow.collectLatest
+import org.koin.compose.getKoin
 import ru.dmitriyt.gallery.domain.model.FileModel
 import ru.dmitriyt.gallery.presentation.screen.gallery.model.UiGalleryItem
 import ru.dmitriyt.gallery.presentation.screen.gallery.views.DirectoryItem
 import ru.dmitriyt.gallery.presentation.screen.gallery.views.ImageItem
 import ru.dmitriyt.gallery.presentation.screen.gallery.views.MonthDividerItem
 import ru.dmitriyt.gallery.presentation.screen.splash.SplashScreen
+import ru.dmitriyt.logger.Logger
 
 data class GalleryScreen(
     val rootDir: FileModel.Directory,
@@ -70,20 +74,29 @@ data class GalleryScreen(
             screenModel.event.collectLatest { event ->
                 when (event) {
                     is GalleryUiEvent.OpenSplash -> navigator.replace(SplashScreen())
-                    is GalleryUiEvent.ShowError -> Unit
+                    is GalleryUiEvent.ShowError -> {
+                        Logger.e(event.error)
+                    }
                 }
             }
         }
 
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize()
+                .background(Brush.horizontalGradient(listOf(Color(0xFFEAD5E6), Color(0xFFE7C2E1)))),
         ) {
-            AsyncImage(
-                model = screenState.contentState.getOrNull()?.backgroundImageUri,
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize().blur(32.dp),
-                contentScale = ContentScale.Crop,
-            )
+            screenState.contentState.getOrNull()?.backgroundImageUri?.let { backgroundImagesUri ->
+                AsyncImage(
+                    model = backgroundImagesUri,
+                    contentDescription = null,
+                    imageLoader = getKoin().get(),
+                    modifier = Modifier.fillMaxSize().blur(32.dp),
+                    contentScale = ContentScale.Crop,
+                    onError = {
+                        Logger.e(it.result.throwable)
+                    }
+                )
+            }
             Row(
                 modifier = Modifier.fillMaxSize(),
             ) {
@@ -139,14 +152,16 @@ data class GalleryScreen(
                         is GalleryUiState.Content.Error -> {
                             Text(text = contentState.error, modifier = Modifier.align(Alignment.Center))
                         }
+
                         GalleryUiState.Content.Loading -> {
                             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                         }
+
                         is GalleryUiState.Content.Success -> {
                             LazyVerticalGrid(
                                 columns = GridCells.Adaptive(232.dp),
                                 modifier = Modifier.fillMaxSize(),
-                                contentPadding = PaddingValues(top = 68.dp)
+                                contentPadding = PaddingValues(top = 84.dp)
                             ) {
                                 contentState.items.forEach { item ->
                                     item(
@@ -161,9 +176,12 @@ data class GalleryScreen(
                                         }
                                     ) {
                                         when (item) {
-                                            is UiGalleryItem.Directory -> DirectoryItem(item = item, onClick = { directory ->
-                                                screenModel.changeDirectory(directory.directory)
-                                            })
+                                            is UiGalleryItem.Directory -> DirectoryItem(
+                                                item = item,
+                                                onClick = { directory ->
+                                                    screenModel.changeDirectory(directory.directory)
+                                                })
+
                                             is UiGalleryItem.Image -> ImageItem(item = item)
                                             is UiGalleryItem.MonthDivider -> MonthDividerItem(item = item)
                                         }
@@ -185,7 +203,12 @@ data class GalleryScreen(
                                     val endPadding = if (screenState.showTitleExpandLogic) 8.dp else 24.dp
                                     Text(
                                         text = directoryName,
-                                        modifier = Modifier.padding(top = 16.dp, bottom = 16.dp, start = 24.dp, end = endPadding),
+                                        modifier = Modifier.padding(
+                                            top = 16.dp,
+                                            bottom = 16.dp,
+                                            start = 24.dp,
+                                            end = endPadding
+                                        ),
                                     )
                                     if (screenState.showTitleExpandLogic) {
                                         IconButton(

@@ -5,12 +5,12 @@ import java.io.File
 
 private val imageExtensions = setOf("jpg", "png", "bmp", "webp", "ico", "gif", "jpeg")
 
-fun File.toDomain(files: List<FileModel> = emptyList()): FileModel {
+fun File.toDomain(images: List<FileModel.Image> = emptyList()): FileModel {
     return if (isDirectory) {
         FileModel.Directory(
             uri = absolutePath,
             name = name,
-            files = files,
+            images = images,
         )
     } else {
         if (isImage()) {

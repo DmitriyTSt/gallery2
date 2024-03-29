@@ -1,4 +1,4 @@
-package ru.dmitriyt.gallery.data.storage
+package ru.dmitriyt.gallery.data.repository
 
 import ru.dmitriyt.gallery.data.model.toDomain
 import ru.dmitriyt.gallery.domain.model.FileModel

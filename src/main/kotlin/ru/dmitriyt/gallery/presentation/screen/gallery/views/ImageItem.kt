@@ -17,6 +17,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import org.koin.compose.getKoin
 import ru.dmitriyt.gallery.presentation.screen.gallery.model.UiGalleryItem
 
 @Composable
@@ -33,6 +34,7 @@ fun ImageItem(item: UiGalleryItem.Image, modifier: Modifier = Modifier) {
         AsyncImage(
             model = item.image.uri,
             contentDescription = item.image.name,
+            imageLoader = getKoin().get(),
             modifier = Modifier
                 .align(Alignment.Center)
                 .background(Color.Gray)

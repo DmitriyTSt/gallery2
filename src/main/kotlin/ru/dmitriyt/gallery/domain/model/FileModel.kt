@@ -17,6 +17,6 @@ sealed interface FileModel {
     data class Directory(
         override val uri: String,
         override val name: String,
-        val files: List<FileModel>,
+        val images: List<Image>,
     ) : FileModel
 }

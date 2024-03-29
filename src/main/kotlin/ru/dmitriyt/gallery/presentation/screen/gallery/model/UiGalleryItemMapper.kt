@@ -25,7 +25,7 @@ fun FileModel.Image.toUi(): UiGalleryItem.Image {
 fun FileModel.Directory.toUi(): UiGalleryItem.Directory {
     return UiGalleryItem.Directory(
         directory = this,
-        images = this.files.filterIsInstance<FileModel.Image>().map { it.toUi() },
+        images = this.images.map { it.toUi() },
     )
 }
 

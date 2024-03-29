@@ -1,4 +1,4 @@
-package ru.dmitriyt.gallery.data.storage
+package ru.dmitriyt.gallery.data.repository
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -14,15 +14,16 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 
 class PhotoRepositoryImpl : PhotoRepository {
-    override suspend fun getImagesTree(uri: String): List<FileModel> {
-        val files = File(uri)
+    override suspend fun getImagesTree(uri: String): List<FileModel> = withContext(Dispatchers.IO) {
+        File(uri)
             .listImages(withDirs = true)
             .map { firstLayerFile ->
                 firstLayerFile.toDomain(
-                    files = firstLayerFile.listImages(withDirs = true).map { it.toDomain() }
+                    images = firstLayerFile.listImages(withDirs = false)
+                        .take(1)
+                        .map { it.toDomain() as FileModel.Image }
                 )
             }
-        return files
     }
 
     override suspend fun getAllPhotos(uri: String): List<ChronologicalItem> = withContext(Dispatchers.IO) {

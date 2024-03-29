@@ -28,7 +28,7 @@ fun DirectoryItem(item: UiGalleryItem.Directory, onClick: (UiGalleryItem.Directo
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             Box(modifier = Modifier.weight(1f)) {
-                item.images.ifEmpty { listOf(UiGalleryItem.Image.placeholder()) }.take(3).forEach {
+                item.images.ifEmpty { listOf(UiGalleryItem.Image.placeholder()) }.forEach {
                     ImageItem(it)
                 }
             }
