@@ -3,24 +3,12 @@ package ru.dmitriyt.gallery.presentation.screen.gallery.model
 import ru.dmitriyt.gallery.domain.model.FileModel
 import kotlin.random.Random
 
-sealed interface UiGalleryItem {
-
-    data class Image(
-        val image: FileModel.Image,
-        val rotation: Float,
-    ) : UiGalleryItem {
-
-        companion object {
-            fun placeholder(): Image {
-                return FileModel.Image("", "placeholder").toUi()
-            }
-        }
+fun FileModel.toUi(): UiGalleryItem? {
+    return when (this) {
+        is FileModel.Directory -> toUi()
+        is FileModel.Image -> toUi()
+        is FileModel.Other -> null
     }
-
-    data class Directory(
-        val directory: FileModel.Directory,
-        val images: List<Image>,
-    ) : UiGalleryItem
 }
 
 fun FileModel.Image.toUi(): UiGalleryItem.Image {
@@ -36,4 +24,3 @@ fun FileModel.Directory.toUi(): UiGalleryItem.Directory {
         images = this.files.filterIsInstance<FileModel.Image>().map { it.toUi() },
     )
 }
-
