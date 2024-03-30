@@ -37,6 +37,7 @@ dependencies {
 
     val imageLoaderVersion = "1.7.8"
     implementation("io.github.qdsfdhvh:image-loader:$imageLoaderVersion")
+    implementation("io.github.qdsfdhvh:image-loader-extension-imageio:$imageLoaderVersion")
 
     val voyagerVersion = "1.0.0"
     implementation("cafe.adriel.voyager:voyager-navigator:$voyagerVersion")
