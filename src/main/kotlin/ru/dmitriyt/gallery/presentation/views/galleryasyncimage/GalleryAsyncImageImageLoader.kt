@@ -8,6 +8,9 @@ import com.seiko.imageloader.model.ImageRequest
 import com.seiko.imageloader.ui.AutoSizeImage
 import okio.Path.Companion.toPath
 
+/**
+ * @see <a href="https://github.com/qdsfdhvh/compose-imageloader">compose-imageloader</a>
+ */
 class GalleryAsyncImageImageLoader : GalleryAsyncImageModel {
     @Composable
     override fun GalleryAsyncImage(

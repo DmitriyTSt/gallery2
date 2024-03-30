@@ -7,6 +7,9 @@ import androidx.compose.ui.layout.ContentScale
 import coil3.compose.AsyncImage
 import org.koin.compose.getKoin
 
+/**
+ * @see <a href="https://github.com/coil-kt/coil">coil</a>
+ */
 class GalleryAsyncImageCoil : GalleryAsyncImageModel {
     @Composable
     override fun GalleryAsyncImage(
