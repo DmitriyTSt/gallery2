@@ -48,6 +48,7 @@ dependencies {
     implementation("com.darkrockstudios:mpfilepicker:3.1.0")
     implementation("com.drewnoakes:metadata-extractor:2.18.0")
     implementation("org.imgscalr:imgscalr-lib:4.2")
+    implementation("com.sksamuel.scrimage:scrimage-core:4.1.1")
 }
 
 compose.desktop {

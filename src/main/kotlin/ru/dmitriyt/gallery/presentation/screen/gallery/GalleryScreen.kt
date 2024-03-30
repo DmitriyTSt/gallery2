@@ -3,15 +3,11 @@ package ru.dmitriyt.gallery.presentation.screen.gallery
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
@@ -45,11 +41,8 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import kotlinx.coroutines.flow.collectLatest
 import ru.dmitriyt.gallery.domain.model.FileModel
-import ru.dmitriyt.gallery.presentation.screen.gallery.model.UiGalleryItem
-import ru.dmitriyt.gallery.presentation.screen.gallery.views.DirectoryItem
-import ru.dmitriyt.gallery.presentation.screen.gallery.views.ImageItem
-import ru.dmitriyt.gallery.presentation.screen.gallery.views.MonthDividerItem
 import ru.dmitriyt.gallery.presentation.screen.splash.SplashScreen
+import ru.dmitriyt.gallery.presentation.utils.rememberKeysLazyGridState
 import ru.dmitriyt.gallery.presentation.views.galleryasyncimage.LocalGalleryAsyncImageModel
 import ru.dmitriyt.logger.Logger
 
@@ -156,36 +149,13 @@ data class GalleryScreen(
                         }
 
                         is GalleryUiState.Content.Success -> {
-                            LazyVerticalGrid(
-                                columns = GridCells.Adaptive(232.dp),
+                            val scrollState = rememberKeysLazyGridState(screenState.viewType, screenState.currentDirectory)
+                            GalleryContent(
+                                contentState = contentState,
+                                changeDirectory = screenModel::changeDirectory,
                                 modifier = Modifier.fillMaxSize(),
-                                contentPadding = PaddingValues(top = 84.dp)
-                            ) {
-                                contentState.items.forEach { item ->
-                                    item(
-                                        span = {
-                                            GridItemSpan(
-                                                if (item is UiGalleryItem.MonthDivider) {
-                                                    maxLineSpan
-                                                } else {
-                                                    1
-                                                }
-                                            )
-                                        }
-                                    ) {
-                                        when (item) {
-                                            is UiGalleryItem.Directory -> DirectoryItem(
-                                                item = item,
-                                                onClick = { directory ->
-                                                    screenModel.changeDirectory(directory.directory)
-                                                })
-
-                                            is UiGalleryItem.Image -> ImageItem(item = item)
-                                            is UiGalleryItem.MonthDivider -> MonthDividerItem(item = item)
-                                        }
-                                    }
-                                }
-                            }
+                                lazyGridState = scrollState,
+                            )
                         }
                     }
                     screenState.currentDirectory?.directory?.name?.let { directoryName ->

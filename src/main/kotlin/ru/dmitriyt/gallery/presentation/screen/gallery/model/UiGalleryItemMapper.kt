@@ -7,6 +7,20 @@ import java.time.ZoneId
 import java.util.Locale
 import kotlin.random.Random
 
+class RotationStorage {
+    private val rotations = hashMapOf<FileModel.Image, Float>()
+
+    fun getOrCreate(image: FileModel.Image): Float {
+        return rotations[image] ?: run {
+            val rotation = ((Random.nextFloat() - 0.5f) * 14f).let { if (it > 0) it + 2.5f else it - 2.5f }
+            rotations[image] = rotation
+            rotation
+        }
+    }
+}
+
+private val rotationStorage = RotationStorage()
+
 fun FileModel.toUi(): UiGalleryItem? {
     return when (this) {
         is FileModel.Directory -> toUi()
@@ -18,7 +32,7 @@ fun FileModel.toUi(): UiGalleryItem? {
 fun FileModel.Image.toUi(): UiGalleryItem.Image {
     return UiGalleryItem.Image(
         image = this,
-        rotation = ((Random.nextFloat() - 0.5f) * 14f).let { if (it > 0) it + 2.5f else it - 2.5f },
+        rotation = rotationStorage.getOrCreate(this),
     )
 }
 

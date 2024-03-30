@@ -4,29 +4,46 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.produceState
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.newFixedThreadPoolContext
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import org.imgscalr.Scalr
 import ru.dmitriyt.gallery.data.storage.GalleryCacheStorage
 import ru.dmitriyt.gallery.presentation.views.galleryasyncimage.GalleryAsyncImageModel
+import ru.dmitriyt.logger.Logger
 import java.awt.image.BufferedImage
-import java.io.File
-import javax.imageio.ImageIO
+import kotlin.time.measureTime
 
-class GalleryAsyncImageCustom : GalleryAsyncImageModel {
+class GalleryAsyncImageCustom(
+    private val imageReader: ImageReader = ImageReaderImageIO(),
+) : GalleryAsyncImageModel {
 
     @OptIn(DelicateCoroutinesApi::class)
-    private val resizeContext by lazy { newFixedThreadPoolContext(2, "resizedContext") }
+    private val resizeContext by lazy {
+        newFixedThreadPoolContext(2, "resizedContext")
+    }
+
+    private val counterMutex = Mutex()
+    private var imagesInProgress: Int = 0
 
     @Composable
     override fun GalleryAsyncImage(
@@ -38,21 +55,56 @@ class GalleryAsyncImageCustom : GalleryAsyncImageModel {
         error: Painter?,
         size: Size?,
     ) {
-        val state = produceState<ImageState>(initialValue = ImageState.Loading(placeholder), key1 = model) {
-            if (model != null) {
-                runCatching { loadImage(model.toString(), size, resizeContext) }
+        var state by remember { mutableStateOf<ImageState>(ImageState.Loading(placeholder)) }
+        val scope = rememberCoroutineScope()
+
+        DisposableEffect(model) {
+            scope.launch {
+                if (model == null) {
+                    state = ImageState.Error(error, RuntimeException("ImageLoad model null"))
+                    return@launch
+                }
+                counterMutex.withLock {
+                    imagesInProgress++
+                    Logger.d("imageLoader : inProgressCount = $imagesInProgress")
+                }
+                runCatching {
+                    val imageBitmap: ImageBitmap
+                    val time = measureTime {
+                        imageBitmap = loadImage(model.toString(), size, resizeContext)
+                    }
+                    Logger.d("imageLoader : time $time from $model")
+                    imageBitmap
+                }
                     .fold(
                         onSuccess = {
-                            value = ImageState.Success(it)
+//                            Logger.d("imageLoader : success $model")
+                            counterMutex.withLock {
+                                imagesInProgress--
+                                Logger.d("imageLoader : inProgressCount = $imagesInProgress")
+                            }
+                            state = ImageState.Success(it)
                         },
                         onFailure = {
-                            value = ImageState.Error(error, it)
+                            counterMutex.withLock {
+                                imagesInProgress--
+                                Logger.d("imageLoader : inProgressCount = $imagesInProgress")
+                            }
+                            if (it is CancellationException) {
+                                throw it
+                            }
+//                            Logger.e(it)
+                            state = ImageState.Error(error, it)
                         }
                     )
             }
+
+            onDispose {
+                scope.cancel()
+            }
         }
         Box(modifier = modifier) {
-            when (val imageState = state.value) {
+            when (val imageState = state) {
                 is ImageState.Error -> imageState.error?.let {
                     Image(
                         painter = it,
@@ -84,16 +136,13 @@ class GalleryAsyncImageCustom : GalleryAsyncImageModel {
         if (fastCacheImage != null) {
             return fastCacheImage
         }
-        val bufferedImage = GalleryCacheStorage.getFromFileCache(imageUri) ?: loadImageFile(imageUri, size, resizeDispatcher)
+        val bufferedImage = GalleryCacheStorage.getFromFileCache(imageUri)
+            ?: loadImageFile(imageUri, size, resizeDispatcher)
 
-        val imageInformation = ImageInformation.readImageInformation(imageUri)
-        val thumbnail = ImageUtil.fixImageByExif(
-            bufferedImage,
-            imageInformation.copy(width = bufferedImage.width, height = bufferedImage.height),
-        )
-        val newImage = thumbnail.toComposeImageBitmap()
-        GalleryCacheStorage.addToFastCache(imageUri, newImage)
-        return newImage
+        val fixedOrientationBufferedImage = imageReader.fixOrientation(imageUri, bufferedImage)
+        val finalImageBitmap = fixedOrientationBufferedImage.toComposeImageBitmap()
+        GalleryCacheStorage.addToFastCache(imageUri, finalImageBitmap)
+        return finalImageBitmap
     }
 
     private suspend fun loadImageFile(
@@ -101,7 +150,11 @@ class GalleryAsyncImageCustom : GalleryAsyncImageModel {
         size: Size?,
         resizeDispatcher: CoroutineDispatcher,
     ): BufferedImage = withContext(Dispatchers.IO) {
-        val bufferedImage = ImageIO.read(File(imageUri))
+        val bufferedImage: BufferedImage
+        val time = measureTime {
+            bufferedImage = imageReader.readImage(imageUri)
+        }
+        Logger.d("imageLoader : readTime $time from $imageUri")
         val finalImage = if (size != null) {
             withContext(resizeDispatcher) {
                 val resized = Scalr.resize(
