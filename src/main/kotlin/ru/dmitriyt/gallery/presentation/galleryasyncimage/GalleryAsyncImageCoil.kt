@@ -5,7 +5,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import coil3.PlatformContext
 import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
 import org.koin.compose.getKoin
 
 /**
@@ -23,7 +25,14 @@ class GalleryAsyncImageCoil : GalleryAsyncImageModel {
         size: Size?,
     ) {
         AsyncImage(
-            model = model,
+            model = ImageRequest.Builder(PlatformContext.INSTANCE)
+                .data(model)
+                .apply {
+                    if (size != null) {
+                        size(coil3.size.Size(size.width.toInt(), size.height.toInt()))
+                    }
+                }
+                .build(),
             contentDescription = contentDescription,
             imageLoader = getKoin().get(),
             modifier = modifier,
