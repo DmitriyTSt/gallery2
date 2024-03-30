@@ -13,7 +13,7 @@ fun rememberKeysLazyGridState(
     initialFirstVisibleItemScrollOffset: Int = 0
 ): LazyGridState {
     val states = remember { HashMap<Pair<Any?, Any?>, LazyGridState>() }
-    Logger.d("scroll states get for ${key1 to key2}")
+//    Logger.d("scroll states get for ${key1 to key2}")
     val state = states[key1 to key2] ?: run {
         val state = LazyGridState(
             firstVisibleItemIndex = initialFirstVisibleItemIndex,
@@ -22,6 +22,6 @@ fun rememberKeysLazyGridState(
         states[key1 to key2] = state
         state
     }
-    Logger.d("scroll states count ${states.size}")
+//    Logger.d("scroll states count ${states.size}")
     return state
 }
