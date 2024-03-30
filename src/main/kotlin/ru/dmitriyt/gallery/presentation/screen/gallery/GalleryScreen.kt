@@ -41,9 +41,9 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import kotlinx.coroutines.flow.collectLatest
 import ru.dmitriyt.gallery.domain.model.FileModel
+import ru.dmitriyt.gallery.presentation.galleryasyncimage.GalleryAsyncImage
 import ru.dmitriyt.gallery.presentation.screen.splash.SplashScreen
 import ru.dmitriyt.gallery.presentation.utils.rememberKeysLazyGridState
-import ru.dmitriyt.gallery.presentation.galleryasyncimage.LocalGalleryAsyncImageModel
 import ru.dmitriyt.logger.Logger
 
 data class GalleryScreen(
@@ -78,14 +78,11 @@ data class GalleryScreen(
                 .background(Brush.horizontalGradient(listOf(Color(0xFFEAD5E6), Color(0xFFE7C2E1)))),
         ) {
             screenState.contentState.getOrNull()?.backgroundImageUri?.let { backgroundImagesUri ->
-                LocalGalleryAsyncImageModel.current.GalleryAsyncImage(
+                GalleryAsyncImage(
                     model = backgroundImagesUri,
                     contentDescription = null,
                     modifier = Modifier.fillMaxSize().blur(32.dp),
                     contentScale = ContentScale.Crop,
-                    placeholder = null,
-                    error = null,
-                    size = null,
                 )
             }
             Row(
@@ -143,11 +140,9 @@ data class GalleryScreen(
                         is GalleryUiState.Content.Error -> {
                             Text(text = contentState.error, modifier = Modifier.align(Alignment.Center))
                         }
-
                         GalleryUiState.Content.Loading -> {
                             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                         }
-
                         is GalleryUiState.Content.Success -> {
                             val scrollState = rememberKeysLazyGridState(screenState.viewType, screenState.currentDirectory)
                             GalleryContent(

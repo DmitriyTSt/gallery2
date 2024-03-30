@@ -1,5 +1,6 @@
 package ru.dmitriyt.gallery.presentation.galleryasyncimage.custom
 
+import androidx.compose.ui.graphics.toComposeImageBitmap
 import com.sksamuel.scrimage.ImmutableImage
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.awt.image.BufferedImage
@@ -15,6 +16,7 @@ interface ImageReader {
 
 class ImageReaderImageIO : ImageReader {
     override suspend fun readImage(imageUri: String): BufferedImage = suspendCancellableCoroutine {
+        org.jetbrains.skia.Image.makeFromEncoded(File(imageUri).readBytes()).toComposeImageBitmap()
         val bufferedImage = ImageIO.read(File(imageUri))
         it.resume(bufferedImage)
     }

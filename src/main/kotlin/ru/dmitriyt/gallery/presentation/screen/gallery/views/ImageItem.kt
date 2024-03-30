@@ -17,8 +17,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import ru.dmitriyt.gallery.presentation.galleryasyncimage.GalleryAsyncImage
 import ru.dmitriyt.gallery.presentation.screen.gallery.model.UiGalleryItem
-import ru.dmitriyt.gallery.presentation.galleryasyncimage.LocalGalleryAsyncImageModel
 
 @Composable
 fun ImageItem(item: UiGalleryItem.Image, modifier: Modifier = Modifier) {
@@ -31,7 +31,7 @@ fun ImageItem(item: UiGalleryItem.Image, modifier: Modifier = Modifier) {
             .border(3.dp, Color.White)
             .shadow(8.dp)
     ) {
-        LocalGalleryAsyncImageModel.current.GalleryAsyncImage(
+        GalleryAsyncImage(
             model = item.image.uri,
             contentDescription = item.image.name,
             modifier = Modifier
