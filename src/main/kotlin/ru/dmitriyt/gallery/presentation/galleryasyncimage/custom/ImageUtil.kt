@@ -1,4 +1,4 @@
-package ru.dmitriyt.gallery.presentation.views.galleryasyncimage.custom
+package ru.dmitriyt.gallery.presentation.galleryasyncimage.custom
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

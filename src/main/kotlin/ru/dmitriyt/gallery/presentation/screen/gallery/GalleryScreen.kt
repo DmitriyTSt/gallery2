@@ -43,7 +43,7 @@ import kotlinx.coroutines.flow.collectLatest
 import ru.dmitriyt.gallery.domain.model.FileModel
 import ru.dmitriyt.gallery.presentation.screen.splash.SplashScreen
 import ru.dmitriyt.gallery.presentation.utils.rememberKeysLazyGridState
-import ru.dmitriyt.gallery.presentation.views.galleryasyncimage.LocalGalleryAsyncImageModel
+import ru.dmitriyt.gallery.presentation.galleryasyncimage.LocalGalleryAsyncImageModel
 import ru.dmitriyt.logger.Logger
 
 data class GalleryScreen(

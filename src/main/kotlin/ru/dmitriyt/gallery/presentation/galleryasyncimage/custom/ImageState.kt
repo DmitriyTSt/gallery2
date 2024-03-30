@@ -1,4 +1,4 @@
-package ru.dmitriyt.gallery.presentation.views.galleryasyncimage.custom
+package ru.dmitriyt.gallery.presentation.galleryasyncimage.custom
 
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.Painter

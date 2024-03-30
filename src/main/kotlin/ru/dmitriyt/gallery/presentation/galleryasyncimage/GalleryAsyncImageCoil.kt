@@ -1,4 +1,4 @@
-package ru.dmitriyt.gallery.presentation.views.galleryasyncimage
+package ru.dmitriyt.gallery.presentation.galleryasyncimage
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier

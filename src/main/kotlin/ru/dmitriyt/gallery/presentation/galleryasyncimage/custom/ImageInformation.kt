@@ -1,4 +1,4 @@
-package ru.dmitriyt.gallery.presentation.views.galleryasyncimage.custom
+package ru.dmitriyt.gallery.presentation.galleryasyncimage.custom
 
 import com.drew.imaging.ImageMetadataReader
 import com.drew.metadata.MetadataException

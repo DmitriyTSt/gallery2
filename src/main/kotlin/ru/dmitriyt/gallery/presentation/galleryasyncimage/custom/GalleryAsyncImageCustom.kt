@@ -1,4 +1,4 @@
-package ru.dmitriyt.gallery.presentation.views.galleryasyncimage.custom
+package ru.dmitriyt.gallery.presentation.galleryasyncimage.custom
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -28,7 +28,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import org.imgscalr.Scalr
 import ru.dmitriyt.gallery.data.storage.GalleryCacheStorage
-import ru.dmitriyt.gallery.presentation.views.galleryasyncimage.GalleryAsyncImageModel
+import ru.dmitriyt.gallery.presentation.galleryasyncimage.GalleryAsyncImageModel
 import ru.dmitriyt.logger.Logger
 import java.awt.image.BufferedImage
 import kotlin.time.measureTime

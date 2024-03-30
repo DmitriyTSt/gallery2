@@ -18,7 +18,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import ru.dmitriyt.gallery.presentation.screen.gallery.model.UiGalleryItem
-import ru.dmitriyt.gallery.presentation.views.galleryasyncimage.LocalGalleryAsyncImageModel
+import ru.dmitriyt.gallery.presentation.galleryasyncimage.LocalGalleryAsyncImageModel
 
 @Composable
 fun ImageItem(item: UiGalleryItem.Image, modifier: Modifier = Modifier) {

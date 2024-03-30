@@ -1,4 +1,4 @@
-package ru.dmitriyt.gallery.presentation.views.galleryasyncimage.custom
+package ru.dmitriyt.gallery.presentation.galleryasyncimage.custom
 
 import com.sksamuel.scrimage.ImmutableImage
 import kotlinx.coroutines.suspendCancellableCoroutine

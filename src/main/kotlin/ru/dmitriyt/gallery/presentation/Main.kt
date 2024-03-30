@@ -14,8 +14,8 @@ import ru.dmitriyt.gallery.di.repositoryModule
 import ru.dmitriyt.gallery.di.screenModelModule
 import ru.dmitriyt.gallery.di.storageModule
 import ru.dmitriyt.gallery.presentation.screen.splash.SplashScreen
-import ru.dmitriyt.gallery.presentation.views.galleryasyncimage.LocalGalleryAsyncImageModel
-import ru.dmitriyt.gallery.presentation.views.galleryasyncimage.custom.GalleryAsyncImageCustom
+import ru.dmitriyt.gallery.presentation.galleryasyncimage.LocalGalleryAsyncImageModel
+import ru.dmitriyt.gallery.presentation.galleryasyncimage.custom.GalleryAsyncImageCustom
 
 @Composable
 @Preview
