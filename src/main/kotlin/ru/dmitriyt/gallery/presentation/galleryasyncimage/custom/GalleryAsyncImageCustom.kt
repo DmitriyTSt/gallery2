@@ -55,13 +55,21 @@ class GalleryAsyncImageCustom(
         error: Painter?,
         size: Size?,
     ) {
-        var state by remember { mutableStateOf<ImageState>(ImageState.Loading(placeholder)) }
+        val fastCacheImage = model?.let { getFastCacheImage(it.toString()) }
+        var state by remember {
+            mutableStateOf(
+                fastCacheImage?.let { ImageState.Success(it) }
+                    ?: ImageState.Loading(placeholder))
+        }
         val scope = rememberCoroutineScope()
 
         DisposableEffect(model) {
             scope.launch {
                 if (model == null) {
                     state = ImageState.Error(error, RuntimeException("ImageLoad model null"))
+                    return@launch
+                }
+                if (fastCacheImage != null) {
                     return@launch
                 }
                 counterMutex.withLock {
@@ -129,6 +137,10 @@ class GalleryAsyncImageCustom(
                 }
             }
         }
+    }
+
+    private fun getFastCacheImage(imageUri: String): ImageBitmap? {
+        return GalleryCacheStorage.getFromFastCache(imageUri)
     }
 
     private suspend fun loadImage(imageUri: String, size: Size?, resizeDispatcher: CoroutineDispatcher): ImageBitmap {
