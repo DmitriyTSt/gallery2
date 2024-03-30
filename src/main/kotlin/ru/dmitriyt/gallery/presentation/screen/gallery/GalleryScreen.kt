@@ -43,15 +43,14 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import coil3.compose.AsyncImage
 import kotlinx.coroutines.flow.collectLatest
-import org.koin.compose.getKoin
 import ru.dmitriyt.gallery.domain.model.FileModel
 import ru.dmitriyt.gallery.presentation.screen.gallery.model.UiGalleryItem
 import ru.dmitriyt.gallery.presentation.screen.gallery.views.DirectoryItem
 import ru.dmitriyt.gallery.presentation.screen.gallery.views.ImageItem
 import ru.dmitriyt.gallery.presentation.screen.gallery.views.MonthDividerItem
 import ru.dmitriyt.gallery.presentation.screen.splash.SplashScreen
+import ru.dmitriyt.gallery.presentation.views.galleryasyncimage.LocalGalleryAsyncImageModel
 import ru.dmitriyt.logger.Logger
 
 data class GalleryScreen(
@@ -86,15 +85,13 @@ data class GalleryScreen(
                 .background(Brush.horizontalGradient(listOf(Color(0xFFEAD5E6), Color(0xFFE7C2E1)))),
         ) {
             screenState.contentState.getOrNull()?.backgroundImageUri?.let { backgroundImagesUri ->
-                AsyncImage(
+                LocalGalleryAsyncImageModel.current.GalleryAsyncImage(
                     model = backgroundImagesUri,
                     contentDescription = null,
-                    imageLoader = getKoin().get(),
                     modifier = Modifier.fillMaxSize().blur(32.dp),
                     contentScale = ContentScale.Crop,
-                    onError = {
-                        Logger.e(it.result.throwable)
-                    }
+                    placeholder = null,
+                    error = null,
                 )
             }
             Row(

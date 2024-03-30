@@ -35,6 +35,9 @@ dependencies {
     implementation("io.coil-kt.coil3:coil-core:$coilVersion")
     implementation("io.coil-kt.coil3:coil-compose:$coilVersion")
 
+    val imageLoaderVersion = "1.7.8"
+    implementation("io.github.qdsfdhvh:image-loader:$imageLoaderVersion")
+
     val voyagerVersion = "1.0.0"
     implementation("cafe.adriel.voyager:voyager-navigator:$voyagerVersion")
     implementation("cafe.adriel.voyager:voyager-screenmodel:$voyagerVersion")
