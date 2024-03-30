@@ -47,6 +47,7 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences-core:1.0.0")
     implementation("com.darkrockstudios:mpfilepicker:3.1.0")
     implementation("com.drewnoakes:metadata-extractor:2.18.0")
+    implementation("org.imgscalr:imgscalr-lib:4.2")
 }
 
 compose.desktop {

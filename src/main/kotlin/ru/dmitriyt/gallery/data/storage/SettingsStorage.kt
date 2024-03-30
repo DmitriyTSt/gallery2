@@ -37,6 +37,14 @@ class SettingsStorage(
             }
         }
 
+        val cacheDir by lazy {
+            File(appDirectory, "cache").apply {
+                if (!exists()) {
+                    mkdir()
+                }
+            }
+        }
+
         const val SETTINGS_FILE_NAME = "settings.preferences_pb"
     }
 }

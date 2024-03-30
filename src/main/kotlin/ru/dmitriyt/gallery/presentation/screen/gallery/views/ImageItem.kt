@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -40,6 +41,7 @@ fun ImageItem(item: UiGalleryItem.Image, modifier: Modifier = Modifier) {
             placeholder = painterResource("placeholder.svg"),
             error = painterResource("placeholder.svg"),
             contentScale = ContentScale.Crop,
+            size = Size(500f, 500f)
         )
     }
 }

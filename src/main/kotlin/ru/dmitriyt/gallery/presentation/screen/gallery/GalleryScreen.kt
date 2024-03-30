@@ -92,6 +92,7 @@ data class GalleryScreen(
                     contentScale = ContentScale.Crop,
                     placeholder = null,
                     error = null,
+                    size = null,
                 )
             }
             Row(

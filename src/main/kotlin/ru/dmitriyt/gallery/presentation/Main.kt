@@ -14,8 +14,8 @@ import ru.dmitriyt.gallery.di.repositoryModule
 import ru.dmitriyt.gallery.di.screenModelModule
 import ru.dmitriyt.gallery.di.storageModule
 import ru.dmitriyt.gallery.presentation.screen.splash.SplashScreen
-import ru.dmitriyt.gallery.presentation.views.galleryasyncimage.GalleryAsyncImageImageLoader
 import ru.dmitriyt.gallery.presentation.views.galleryasyncimage.LocalGalleryAsyncImageModel
+import ru.dmitriyt.gallery.presentation.views.galleryasyncimage.custom.GalleryAsyncImageCustom
 
 @Composable
 @Preview
@@ -30,7 +30,7 @@ fun main() = application {
         loadKoinModules(listOf(coilModule, screenModelModule, storageModule, repositoryModule))
     }) {
         Window(title = "Gallery", onCloseRequest = ::exitApplication) {
-            CompositionLocalProvider(LocalGalleryAsyncImageModel provides GalleryAsyncImageImageLoader()) {
+            CompositionLocalProvider(LocalGalleryAsyncImageModel provides GalleryAsyncImageCustom()) {
                 App()
             }
         }

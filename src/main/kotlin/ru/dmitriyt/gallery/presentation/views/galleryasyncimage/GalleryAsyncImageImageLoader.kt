@@ -35,7 +35,8 @@ class GalleryAsyncImageImageLoader : GalleryAsyncImageModel {
         modifier: Modifier,
         contentScale: ContentScale,
         placeholder: Painter?,
-        error: Painter?
+        error: Painter?,
+        size: Size?,
     ) {
         CompositionLocalProvider(
             LocalImageLoader provides remember { imageLoader },

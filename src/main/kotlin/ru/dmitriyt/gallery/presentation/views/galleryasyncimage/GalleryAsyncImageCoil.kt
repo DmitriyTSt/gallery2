@@ -2,6 +2,7 @@ package ru.dmitriyt.gallery.presentation.views.galleryasyncimage
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import coil3.compose.AsyncImage
@@ -18,7 +19,8 @@ class GalleryAsyncImageCoil : GalleryAsyncImageModel {
         modifier: Modifier,
         contentScale: ContentScale,
         placeholder: Painter?,
-        error: Painter?
+        error: Painter?,
+        size: Size?,
     ) {
         AsyncImage(
             model = model,
