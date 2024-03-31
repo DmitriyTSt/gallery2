@@ -14,13 +14,18 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 
 class PhotoRepositoryImpl : PhotoRepository {
+
+    override suspend fun getImages(uri: String): List<FileModel.Image> = withContext(Dispatchers.IO) {
+        File(uri).listImages(withDirs = false).map { it.toDomain() as FileModel.Image }
+    }
+
     override suspend fun getImagesTree(uri: String): List<FileModel> = withContext(Dispatchers.IO) {
         File(uri)
             .listImages(withDirs = true)
             .map { firstLayerFile ->
                 firstLayerFile.toDomain(
                     images = firstLayerFile.listImages(withDirs = false)
-                        .take(3)
+                        .take(0)
                         .map { it.toDomain() as FileModel.Image }
                 )
             }

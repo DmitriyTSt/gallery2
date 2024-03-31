@@ -16,8 +16,6 @@ object GalleryCacheStorage {
     private val cacheMap = mutableMapOf<String, ImageBitmap>()
     private val keys = LinkedList<String>()
 
-    private val cacheMutex = Mutex()
-
     @Synchronized
     fun addToFastCache(key: String, image: ImageBitmap) {
         if (keys.size >= CACHE_SIZE) {

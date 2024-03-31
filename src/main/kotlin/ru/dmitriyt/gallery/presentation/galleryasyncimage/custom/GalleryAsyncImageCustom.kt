@@ -21,6 +21,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newFixedThreadPoolContext
 import kotlinx.coroutines.sync.Mutex
@@ -35,6 +36,7 @@ import kotlin.time.measureTime
 
 class GalleryAsyncImageCustom(
     private val imageReader: ImageReader = ImageReaderImageIO(),
+    private val loggerEnabled: Boolean = true,
 ) : GalleryAsyncImageModel {
 
     @OptIn(DelicateCoroutinesApi::class)
@@ -64,7 +66,13 @@ class GalleryAsyncImageCustom(
         val scope = rememberCoroutineScope()
 
         DisposableEffect(model) {
+            if (loggerEnabled) {
+                Logger.d("START_DISPOSABLE $model ${scope.isActive}")
+            }
             scope.launch {
+                if (loggerEnabled) {
+                    Logger.d("START_LOAD $model")
+                }
                 if (model == null) {
                     state = ImageState.Error(error, RuntimeException("ImageLoad model null"))
                     return@launch
@@ -72,60 +80,77 @@ class GalleryAsyncImageCustom(
                 if (fastCacheImage != null) {
                     return@launch
                 }
-                counterMutex.withLock {
-                    imagesInProgress++
-                    Logger.d("imageLoader : inProgressCount = $imagesInProgress")
+                if (loggerEnabled) {
+                    counterMutex.withLock {
+                        imagesInProgress++
+                        Logger.d("imageLoader : inProgressCount = $imagesInProgress")
+                    }
                 }
+
                 runCatching {
                     val imageBitmap: ImageBitmap
                     val time = measureTime {
                         imageBitmap = loadImage(model.toString(), size, resizeContext)
                     }
-                    Logger.d("imageLoader : time $time from $model")
+                    if (loggerEnabled) {
+                        Logger.d("imageLoader : time $time from $model")
+                    }
                     imageBitmap
                 }
                     .fold(
                         onSuccess = {
-//                            Logger.d("imageLoader : success $model")
-                            counterMutex.withLock {
-                                imagesInProgress--
-                                Logger.d("imageLoader : inProgressCount = $imagesInProgress")
+                            if (loggerEnabled) {
+                                counterMutex.withLock {
+                                    imagesInProgress--
+                                    Logger.d("imageLoader : inProgressCount = $imagesInProgress")
+                                }
                             }
                             state = ImageState.Success(it)
                         },
                         onFailure = {
-                            counterMutex.withLock {
-                                imagesInProgress--
-                                Logger.d("imageLoader : inProgressCount = $imagesInProgress")
+                            if (loggerEnabled) {
+                                counterMutex.withLock {
+                                    imagesInProgress--
+                                    Logger.d("imageLoader : inProgressCount = $imagesInProgress")
+                                }
                             }
                             if (it is CancellationException) {
                                 throw it
                             }
-//                            Logger.e(it)
                             state = ImageState.Error(error, it)
                         }
                     )
             }
 
             onDispose {
+                if (loggerEnabled) {
+                    Logger.d("ON_DISPOSE")
+                }
                 scope.cancel()
             }
         }
         Box(modifier = modifier) {
             when (val imageState = state) {
-                is ImageState.Error -> imageState.error?.let {
-                    Image(
-                        painter = it,
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxSize(),
-                    )
+                is ImageState.Error -> {
+                    if (loggerEnabled) {
+                        Logger.e(imageState.throwable)
+                    }
+                    imageState.error?.let {
+                        Image(
+                            painter = it,
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    }
                 }
-                is ImageState.Loading -> imageState.placeholder?.let {
-                    Image(
-                        painter = it,
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxSize(),
-                    )
+                is ImageState.Loading -> {
+                    imageState.placeholder?.let {
+                        Image(
+                            painter = it,
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    }
                 }
                 is ImageState.Success -> {
                     Image(

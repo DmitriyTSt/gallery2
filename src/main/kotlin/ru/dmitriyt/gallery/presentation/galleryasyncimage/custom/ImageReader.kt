@@ -16,7 +16,6 @@ interface ImageReader {
 
 class ImageReaderImageIO : ImageReader {
     override suspend fun readImage(imageUri: String): BufferedImage = suspendCancellableCoroutine {
-        org.jetbrains.skia.Image.makeFromEncoded(File(imageUri).readBytes()).toComposeImageBitmap()
         val bufferedImage = ImageIO.read(File(imageUri))
         it.resume(bufferedImage)
     }

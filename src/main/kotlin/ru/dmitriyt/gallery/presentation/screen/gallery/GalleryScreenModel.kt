@@ -97,10 +97,10 @@ class GalleryScreenModel(
                 onSuccess = { items ->
                     mutableState.update { state ->
                         state.copy(
+                            backgroundImageUri = items.filterIsInstance<UiGalleryItem.Image>().randomOrNull()?.image?.uri,
                             contentState = GalleryUiState.Content.Success(
-                                backgroundImageUri = items.filterIsInstance<UiGalleryItem.Image>().randomOrNull()?.image?.uri,
                                 items = items,
-                            )
+                            ),
                         )
                     }
                 },
