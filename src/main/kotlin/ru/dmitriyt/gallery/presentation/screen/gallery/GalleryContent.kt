@@ -14,16 +14,15 @@ import ru.dmitriyt.gallery.presentation.screen.gallery.model.UiGalleryItem
 import ru.dmitriyt.gallery.presentation.screen.gallery.views.DirectoryItem
 import ru.dmitriyt.gallery.presentation.screen.gallery.views.ImageItem
 import ru.dmitriyt.gallery.presentation.screen.gallery.views.MonthDividerItem
-import ru.dmitriyt.logger.Logger
 
 @Composable
 fun GalleryContent(
     contentState: GalleryUiState.Content.Success,
     changeDirectory: (FileModel.Directory) -> Unit,
+    openPhoto: (FileModel.Image) -> Unit,
     lazyGridState: LazyGridState = rememberLazyGridState(),
     modifier: Modifier = Modifier,
 ) {
-    Logger.d(lazyGridState)
     LazyVerticalGrid(
         columns = GridCells.Adaptive(232.dp),
         modifier = modifier,
@@ -59,7 +58,9 @@ fun GalleryContent(
                             changeDirectory(directory.directory)
                         })
 
-                    is UiGalleryItem.Image -> ImageItem(item = item)
+                    is UiGalleryItem.Image -> ImageItem(item = item, onClick = { image ->
+                        openPhoto(image.image)
+                    })
                     is UiGalleryItem.MonthDivider -> MonthDividerItem(item = item)
                 }
             }

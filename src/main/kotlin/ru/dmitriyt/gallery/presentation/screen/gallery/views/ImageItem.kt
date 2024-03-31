@@ -2,6 +2,7 @@ package ru.dmitriyt.gallery.presentation.screen.gallery.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,7 +22,7 @@ import ru.dmitriyt.gallery.presentation.galleryasyncimage.GalleryAsyncImage
 import ru.dmitriyt.gallery.presentation.screen.gallery.model.UiGalleryItem
 
 @Composable
-fun ImageItem(item: UiGalleryItem.Image, modifier: Modifier = Modifier) {
+fun ImageItem(item: UiGalleryItem.Image, modifier: Modifier = Modifier, onClick: ((UiGalleryItem.Image) -> Unit)? = null) {
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -29,6 +30,7 @@ fun ImageItem(item: UiGalleryItem.Image, modifier: Modifier = Modifier) {
             .rotate(item.rotation)
             .padding(32.dp)
             .border(3.dp, Color.White)
+            .let { if (onClick != null) it.clickable { onClick(item) } else it }
             .shadow(8.dp)
     ) {
         GalleryAsyncImage(

@@ -9,6 +9,7 @@ data class GalleryUiState(
     val isNestedDirectory: Boolean = false,
     val viewType: UiGalleryViewType = UiGalleryViewType.Tree,
     val contentState: Content = Content.Loading,
+    val backgroundImageUri: String? = null,
 ) {
     val showBackIcon: Boolean
         get() = viewType == UiGalleryViewType.Tree && isNestedDirectory
@@ -20,13 +21,8 @@ data class GalleryUiState(
         data object Loading : Content()
         data class Error(val error: String) : Content()
         data class Success(
-            val backgroundImageUri: String?,
             val items: List<UiGalleryItem> = emptyList(),
         ) : Content()
-
-        fun getOrNull(): Success? {
-            return this as? Success
-        }
     }
 }
 

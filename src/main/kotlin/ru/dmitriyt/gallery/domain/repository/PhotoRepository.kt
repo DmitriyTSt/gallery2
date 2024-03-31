@@ -9,6 +9,12 @@ import ru.dmitriyt.gallery.domain.model.FileModel
 interface PhotoRepository {
 
     /**
+     * Получить изображения из заданной папки по пути [uri]
+     * @param uri - путь папки
+     */
+    suspend fun getImages(uri: String): List<FileModel.Image>
+
+    /**
      * Получить дерево из папок и изображений по пути [uri]
      * @param uri - путь корневой папки дерева
      */

@@ -36,12 +36,17 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import kotlinx.coroutines.flow.collectLatest
 import ru.dmitriyt.gallery.domain.model.FileModel
 import ru.dmitriyt.gallery.presentation.galleryasyncimage.GalleryAsyncImage
+import ru.dmitriyt.gallery.presentation.screen.gallery.model.UiGalleryItem
+import ru.dmitriyt.gallery.presentation.screen.gallery.model.UiGalleryViewType
+import ru.dmitriyt.gallery.presentation.screen.photo.PhotoScreen
+import ru.dmitriyt.gallery.presentation.screen.photo.PhotoScreenParams
 import ru.dmitriyt.gallery.presentation.screen.splash.SplashScreen
 import ru.dmitriyt.gallery.presentation.utils.rememberKeysLazyGridState
 import ru.dmitriyt.logger.Logger
@@ -77,14 +82,12 @@ data class GalleryScreen(
             modifier = Modifier.fillMaxSize()
                 .background(Brush.horizontalGradient(listOf(Color(0xFFEAD5E6), Color(0xFFE7C2E1)))),
         ) {
-            screenState.contentState.getOrNull()?.backgroundImageUri?.let { backgroundImagesUri ->
-                GalleryAsyncImage(
-                    model = backgroundImagesUri,
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxSize().blur(32.dp),
-                    contentScale = ContentScale.Crop,
-                )
-            }
+            GalleryAsyncImage(
+                model = screenState.backgroundImageUri,
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize().blur(32.dp),
+                contentScale = ContentScale.Crop,
+            )
             Row(
                 modifier = Modifier.fillMaxSize(),
             ) {
@@ -148,6 +151,26 @@ data class GalleryScreen(
                             GalleryContent(
                                 contentState = contentState,
                                 changeDirectory = screenModel::changeDirectory,
+                                openPhoto = { image ->
+                                    val currentDirectory = when (screenState.viewType) {
+                                        UiGalleryViewType.Chronology -> rootDir
+                                        UiGalleryViewType.Tree -> screenState.currentDirectory?.directory
+                                    }
+                                    if (currentDirectory != null) {
+                                        val images = contentState.items.filterIsInstance<UiGalleryItem.Image>().map { it.image }
+                                        val index = images.indexOf(image)
+                                        navigator.push(
+                                            PhotoScreen(
+                                                PhotoScreenParams(
+                                                    backgroundImageUri = screenState.backgroundImageUri,
+                                                    directory = currentDirectory,
+                                                    index = index,
+                                                    viewType = screenState.viewType,
+                                                )
+                                            )
+                                        )
+                                    }
+                                },
                                 modifier = Modifier.fillMaxSize(),
                                 lazyGridState = scrollState,
                             )

@@ -2,21 +2,18 @@ package ru.dmitriyt.gallery.data.storage
 
 import androidx.annotation.WorkerThread
 import androidx.compose.ui.graphics.ImageBitmap
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.awt.image.BufferedImage
 import java.io.File
 import java.util.Base64
 import java.util.LinkedList
 import javax.imageio.ImageIO
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.withContext
 
 object GalleryCacheStorage {
-    private const val CACHE_SIZE = 100
+    private const val CACHE_SIZE = 200
     private val cacheMap = mutableMapOf<String, ImageBitmap>()
     private val keys = LinkedList<String>()
-
-    private val cacheMutex = Mutex()
 
     @Synchronized
     fun addToFastCache(key: String, image: ImageBitmap) {
