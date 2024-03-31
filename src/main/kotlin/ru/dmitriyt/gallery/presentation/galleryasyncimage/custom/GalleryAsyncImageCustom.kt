@@ -56,7 +56,7 @@ class GalleryAsyncImageCustom(
         size: Size?,
     ) {
         val fastCacheImage = model?.let { getFastCacheImage(it.toString()) }
-        var state by remember(fastCacheImage) {
+        var state by remember {
             mutableStateOf(
                 fastCacheImage?.let { ImageState.Success(it) }
                     ?: ImageState.Loading(placeholder))
