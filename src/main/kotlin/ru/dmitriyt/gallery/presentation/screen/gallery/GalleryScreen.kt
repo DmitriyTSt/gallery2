@@ -36,6 +36,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
@@ -81,14 +82,11 @@ data class GalleryScreen(
             modifier = Modifier.fillMaxSize()
                 .background(Brush.horizontalGradient(listOf(Color(0xFFEAD5E6), Color(0xFFE7C2E1)))),
         ) {
-            val backgroundImageUri = screenState.backgroundImageUri
-            Logger.d("backgroundImageUri = $backgroundImageUri")
             GalleryAsyncImage(
-                model = backgroundImageUri,
+                model = screenState.backgroundImageUri,
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize().blur(32.dp),
                 contentScale = ContentScale.Crop,
-                loggerEnabled = true,
             )
             Row(
                 modifier = Modifier.fillMaxSize(),

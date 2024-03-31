@@ -18,9 +18,8 @@ fun GalleryAsyncImage(
     placeholder: Painter? = null,
     error: Painter? = null,
     size: Size? = null,
-    loggerEnabled: Boolean = false
 ) {
-    GalleryAsyncImageCustom(loggerEnabled = loggerEnabled).GalleryAsyncImage(
+    galleryAsyncImageModel.GalleryAsyncImage(
         model = model,
         contentDescription = contentDescription,
         modifier = modifier,

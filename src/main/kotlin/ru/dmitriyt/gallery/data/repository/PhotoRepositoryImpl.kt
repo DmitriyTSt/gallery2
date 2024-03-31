@@ -25,7 +25,7 @@ class PhotoRepositoryImpl : PhotoRepository {
             .map { firstLayerFile ->
                 firstLayerFile.toDomain(
                     images = firstLayerFile.listImages(withDirs = false)
-                        .take(0)
+                        .take(3)
                         .map { it.toDomain() as FileModel.Image }
                 )
             }

@@ -20,8 +20,6 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newFixedThreadPoolContext
 import kotlinx.coroutines.sync.Mutex
@@ -36,7 +34,7 @@ import kotlin.time.measureTime
 
 class GalleryAsyncImageCustom(
     private val imageReader: ImageReader = ImageReaderImageIO(),
-    private val loggerEnabled: Boolean = true,
+    private val loggerEnabled: Boolean = false,
 ) : GalleryAsyncImageModel {
 
     @OptIn(DelicateCoroutinesApi::class)
@@ -58,7 +56,7 @@ class GalleryAsyncImageCustom(
         size: Size?,
     ) {
         val fastCacheImage = model?.let { getFastCacheImage(it.toString()) }
-        var state by remember {
+        var state by remember(fastCacheImage) {
             mutableStateOf(
                 fastCacheImage?.let { ImageState.Success(it) }
                     ?: ImageState.Loading(placeholder))
@@ -66,18 +64,9 @@ class GalleryAsyncImageCustom(
         val scope = rememberCoroutineScope()
 
         DisposableEffect(model) {
-            if (loggerEnabled) {
-                Logger.d("START_DISPOSABLE $model ${scope.isActive}")
-            }
-            scope.launch {
-                if (loggerEnabled) {
-                    Logger.d("START_LOAD $model")
-                }
+            val loadImageJob = scope.launch {
                 if (model == null) {
                     state = ImageState.Error(error, RuntimeException("ImageLoad model null"))
-                    return@launch
-                }
-                if (fastCacheImage != null) {
                     return@launch
                 }
                 if (loggerEnabled) {
@@ -123,10 +112,7 @@ class GalleryAsyncImageCustom(
             }
 
             onDispose {
-                if (loggerEnabled) {
-                    Logger.d("ON_DISPOSE")
-                }
-                scope.cancel()
+                loadImageJob.cancel()
             }
         }
         Box(modifier = modifier) {
@@ -170,11 +156,22 @@ class GalleryAsyncImageCustom(
 
     private suspend fun loadImage(imageUri: String, size: Size?, resizeDispatcher: CoroutineDispatcher): ImageBitmap {
         val fastCacheImage = GalleryCacheStorage.getFromFastCache(imageUri)
-        if (fastCacheImage != null) {
+        // сейчас сделано так, что когда size есть, то сразу берется из кеша,
+        //  а если нет (нам нужно загрузить полную), то идет грузить минуя кеш
+        // TODO refactoring load image size selection from cache logic
+        if (fastCacheImage != null && size != null) {
+            Logger.d("imageLoader : from fast cache: $imageUri")
             return fastCacheImage
         }
-        val bufferedImage = GalleryCacheStorage.getFromFileCache(imageUri)
-            ?: loadImageFile(imageUri, size, resizeDispatcher)
+        // TODO refactoring load image size selection from cache logic
+        val bufferedImage = (if (size != null) {
+            Logger.d("imageLoader : from file cache : $imageUri")
+            GalleryCacheStorage.getFromFileCache(imageUri)
+        } else null)
+            ?: run {
+                Logger.d("imageLoader : from original file : $imageUri")
+                loadImageFile(imageUri, size, resizeDispatcher)
+            }
 
         val fixedOrientationBufferedImage = imageReader.fixOrientation(imageUri, bufferedImage)
         val finalImageBitmap = fixedOrientationBufferedImage.toComposeImageBitmap()
@@ -191,7 +188,9 @@ class GalleryAsyncImageCustom(
         val time = measureTime {
             bufferedImage = imageReader.readImage(imageUri)
         }
-        Logger.d("imageLoader : readTime $time from $imageUri")
+        if (loggerEnabled) {
+            Logger.d("imageLoader : readTime $time from $imageUri")
+        }
         val finalImage = if (size != null) {
             withContext(resizeDispatcher) {
                 val resized = Scalr.resize(
