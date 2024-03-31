@@ -24,10 +24,14 @@ class GalleryScreenModel(
 
     private val directoryStack: ArrayDeque<FileModel.Directory> = ArrayDeque()
 
+    private var isInitialized = false
+
     fun init(rootDirectory: FileModel.Directory) {
+        if (isInitialized) return
         directoryStack.addLast(rootDirectory)
         mutableState.update { state -> state.copy(contentState = GalleryUiState.Content.Loading) }
         loadPhotos(rootDirectory)
+        isInitialized = true
     }
 
     fun changeDirectory(newDirectory: FileModel.Directory) {

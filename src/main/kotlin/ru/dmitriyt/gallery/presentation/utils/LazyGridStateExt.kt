@@ -2,7 +2,7 @@ package ru.dmitriyt.gallery.presentation.utils
 
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import ru.dmitriyt.logger.Logger
 
 @Composable
@@ -12,7 +12,7 @@ fun rememberKeysLazyGridState(
     initialFirstVisibleItemIndex: Int = 0,
     initialFirstVisibleItemScrollOffset: Int = 0
 ): LazyGridState {
-    val states = remember { HashMap<Pair<Any?, Any?>, LazyGridState>() }
+    val states = rememberSaveable { HashMap<Pair<Any?, Any?>, LazyGridState>() }
 //    Logger.d("scroll states get for ${key1 to key2}")
     val state = states[key1 to key2] ?: run {
         val state = LazyGridState(

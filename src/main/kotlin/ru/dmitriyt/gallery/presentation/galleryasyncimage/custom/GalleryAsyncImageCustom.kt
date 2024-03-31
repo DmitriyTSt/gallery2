@@ -160,16 +160,16 @@ class GalleryAsyncImageCustom(
         //  а если нет (нам нужно загрузить полную), то идет грузить минуя кеш
         // TODO refactoring load image size selection from cache logic
         if (fastCacheImage != null && size != null) {
-            Logger.d("imageLoader : from fast cache: $imageUri")
+//            Logger.d("imageLoader : from fast cache: $imageUri")
             return fastCacheImage
         }
         // TODO refactoring load image size selection from cache logic
         val bufferedImage = (if (size != null) {
-            Logger.d("imageLoader : from file cache : $imageUri")
+//            Logger.d("imageLoader : from file cache : $imageUri")
             GalleryCacheStorage.getFromFileCache(imageUri)
         } else null)
             ?: run {
-                Logger.d("imageLoader : from original file : $imageUri")
+//                Logger.d("imageLoader : from original file : $imageUri")
                 loadImageFile(imageUri, size, resizeDispatcher)
             }
 
