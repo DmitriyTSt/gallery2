@@ -1,6 +1,5 @@
 package ru.dmitriyt.gallery.presentation.galleryasyncimage.custom
 
-import androidx.compose.ui.graphics.toComposeImageBitmap
 import com.sksamuel.scrimage.ImmutableImage
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.awt.image.BufferedImage

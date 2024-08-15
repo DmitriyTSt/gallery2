@@ -8,10 +8,7 @@ import androidx.compose.ui.window.application
 import cafe.adriel.voyager.navigator.Navigator
 import org.koin.compose.KoinApplication
 import org.koin.core.context.loadKoinModules
-import ru.dmitriyt.gallery.di.coilModule
-import ru.dmitriyt.gallery.di.repositoryModule
-import ru.dmitriyt.gallery.di.screenModelModule
-import ru.dmitriyt.gallery.di.storageModule
+import ru.dmitriyt.gallery.di.*
 import ru.dmitriyt.gallery.presentation.screen.splash.SplashScreen
 
 @Composable
@@ -24,7 +21,7 @@ fun App() {
 
 fun main() = application {
     KoinApplication(application = {
-        loadKoinModules(listOf(coilModule, screenModelModule, storageModule, repositoryModule))
+        loadKoinModules(listOf(coilModule, screenModelModule, storageModule, repositoryModule, useCaseModule))
     }) {
         Window(title = "Gallery", onCloseRequest = ::exitApplication) {
             App()

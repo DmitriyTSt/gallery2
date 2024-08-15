@@ -6,7 +6,7 @@ import ru.dmitriyt.gallery.presentation.screen.photo.PhotoScreenModel
 import ru.dmitriyt.gallery.presentation.screen.splash.SplashScreenModel
 
 val screenModelModule = module {
-    factory { SplashScreenModel(get(), get()) }
+    factory { SplashScreenModel(get(), get(), get()) }
     factory { GalleryScreenModel(get(), get()) }
     factory { PhotoScreenModel(get()) }
 }
